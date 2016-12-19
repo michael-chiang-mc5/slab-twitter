@@ -1,0 +1,13 @@
+cycler==0.10.0
+jsonpickle==0.9.3
+matplotlib==1.5.3
+nltk==3.2.1
+numpy==1.11.3
+oauthlib==2.0.1
+pyparsing==2.1.10
+python-dateutil==2.6.0
+pytz==2016.10
+requests==2.12.4
+requests-oauthlib==0.7.0
+six==1.10.0
+tweepy==3.5.0
