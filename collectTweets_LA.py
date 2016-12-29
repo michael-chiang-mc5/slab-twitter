@@ -30,6 +30,7 @@ class CustomStreamListener(tweepy.StreamListener):
         # 'contributors', 'id_str', 'filter_level'])
         self.total_tweets = self.total_tweets + 1
         if status.coordinates is None:
+            print(str(self.tweets_with_geolocation) + ' tweets with geolocation (' + str(self.total_tweets) +' total) over ' + str(time.time()-t0) + ' seconds')
             return True
         self.tweets_with_geolocation = self.tweets_with_geolocation + 1
         with open(outfile, 'a') as f:
