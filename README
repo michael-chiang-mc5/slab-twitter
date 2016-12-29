@@ -5,6 +5,10 @@ Instructions:
   (3) Run plotLocationsOnMapTemplate.py. This creates a figure where tweet locations are overlaid on a map
 
 
+Todo:
+collectTweets -> streamTweets_boundingBox
+collectTweets -> streamTweets_query
+
 
 Other notes:
 ****

@@ -47,11 +47,12 @@ class CustomStreamListener(tweepy.StreamListener):
         return True
     def on_error(self, status_code):
         print >> sys.stderr, 'Encountered error with status code:', status_code
+        if status_code == 420:
+            return False # kill stream if exceed attempt limit to connect to stream
         return True # Don't kill the stream
     def on_timeout(self):
         print >> sys.stderr, 'Timeout...'
         return True # Don't kill the stream
-
 
 sapi = tweepy.streaming.Stream(auth, CustomStreamListener())
 sapi.filter(locations=bounding_box)
