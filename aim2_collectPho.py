@@ -19,7 +19,7 @@ import sys
 import jsonpickle
 import os
 
-searchQuery = '#pho'  # this is what we're searching for
+searchQuery = 'boba'  # this is what we're searching for
 maxTweets = 200 # Some arbitrary large number, ex: 10000000
 tweetsPerQry = 100  # this is the max the API permits
 fName = 'tweets.txt' # We'll store the tweets in a text file.
@@ -40,17 +40,17 @@ with open(fName, 'w') as f:
         try:
             if (max_id <= 0):
                 if (not sinceId):
-                    new_tweets = api.search(q=searchQuery, count=tweetsPerQry, geocode="34.047468,-118.251457,20mi",
+                    new_tweets = api.search(q=searchQuery, count=tweetsPerQry, geocode="33.950667,-118.151507,30mi",
 					) # geocode="latitude,longitude,radius"
                 else:
-                    new_tweets = api.search(q=searchQuery, count=tweetsPerQry, geocode="34.047468,-118.251457,20mi",
+                    new_tweets = api.search(q=searchQuery, count=tweetsPerQry, geocode="33.950667,-118.151507,30mi",
                                             since_id=sinceId)
             else:
                 if (not sinceId):
-                    new_tweets = api.search(q=searchQuery, count=tweetsPerQry, geocode="34.047468,-118.251457,20mi",
+                    new_tweets = api.search(q=searchQuery, count=tweetsPerQry, geocode="33.950667,-118.151507,30mi",
                                             max_id=str(max_id - 1))
                 else:
-                    new_tweets = api.search(q=searchQuery, count=tweetsPerQry, geocode="34.047468,-118.251457,20mi",
+                    new_tweets = api.search(q=searchQuery, count=tweetsPerQry, geocode="33.950667,-118.151507,30mi",
                                             max_id=str(max_id - 1),
                                             since_id=sinceId)
             if not new_tweets:

@@ -1,3 +1,14 @@
+Instructions:
+  (1) Edit parameters in parameters.py
+  (2) Run collectTweets.py to record a bunch of tweets
+  (2) Run createMapTemplate.py. This creates a template where tweet locations can be plotted
+  (3) Run plotLocationsOnMapTemplate.py. This creates a figure where tweet locations are overlaid on a map
+
+
+
+Other notes:
+****
+
 main.py, main2.py, main3.py are example python files
 
 1_collectTweets.py uses twitter api to store tweets
@@ -6,3 +17,11 @@ main.py, main2.py, main3.py are example python files
 
 Aim 1:
 Run the following terminal command:
+
+
+****
+
+need global packages for python:
+virtualenv --system-site-packages -p python3.4 venv
+
+install basemap, geos from source not pip
