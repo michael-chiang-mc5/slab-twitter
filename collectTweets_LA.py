@@ -6,7 +6,7 @@ import jsonpickle
 import time
 
 # This script collects tweets from the LA region
-bounding_box = parameters.mapTemplate_bb
+bounding_box = parameters.boundingBox['mapTemplate']
 outfile = 'twitter_data/la_stream.json'
 
 # set up streaming API

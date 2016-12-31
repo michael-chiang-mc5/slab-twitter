@@ -9,7 +9,7 @@ Instructions on server: 104.131.145.75
 
 Instructions on workstation:
   (1) Edit parameters in parameters.py
-  (2) Run collectTweets_LA.py to record a bunch of tweets (THIS SHOULD BE DONE ON SERVER). 300-1000 tweets per hour depending on time of day
+  (2) Run collectTweets_LA.py to record a bunch of tweets (THIS SHOULD BE DONE ON SERVER). 300-1000 tweets per hour depending on time of day (average 700 per hour)
   (2) Run createMapTemplate.py. This creates a template where tweet locations can be plotted
   (3) Run plotLocationsOnMapTemplate.py. This creates a figure where tweet locations are overlaid on a map
   (4) Run wordCloud.py

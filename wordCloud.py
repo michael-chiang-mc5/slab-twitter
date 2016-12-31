@@ -1,31 +1,42 @@
 # http://sebastianraschka.com/Articles/2014_twitter_wordcloud.html
 from wordcloud import WordCloud, STOPWORDS
-import matplotlib.pyplot as plt
 import json
 import time
+import parameters
+import matplotlib.pyplot as plt
 
+boundingBox = parameters.boundingBox['pasadena']
 
-
-
-# Concatenate all words
+# read all tweets into list
 t0=time.time()
-lon=[]
-lat=[]
-
-words = ''
+#lon=[]
+#lat=[]
+#words = ''
+tweets = []
 with open('twitter_data/la_stream.json', 'r') as f:
     for line in f:
         tweet = json.loads(line)
+        tweets.append(tweet)
         #print(tweet['place']) # this is the location of the TWEET
         #print(tweet['user']['location']) # this is self reported user location
         #print(tweet['id_str']) # unique ID for tweet
         #print(tweet['user']['name']) # self reported name of user
         #print(tweet['user']['screen_name']) # twitter handle (ex: @realDonaldTrump )
         #print(tweet['user']['geo_enabled']) # whether or not user has enabled geolocation
+        #words += tweet['text'].replace('\n', '')
+        #words += ' '
 
-        words += tweet['text'].replace('\n', '')
-        words += ' '
+# filter tweets
+tweets_filtered = [tweet for tweet in tweets if tweet['geo']['coordinates'][1] > boundingBox[0] and \
+                                                tweet['geo']['coordinates'][1] < boundingBox[2] and \
+                                                tweet['geo']['coordinates'][0] > boundingBox[1] and \
+                                                tweet['geo']['coordinates'][0] < boundingBox[3] \
+                   ]
 
+# list to string
+words = " ".join([tweet['text'] for tweet in tweets_filtered])
+
+# sanitize
 words = " ".join([word for word in words.split()
                             if 'http' not in word
                                 and not word.startswith('@')

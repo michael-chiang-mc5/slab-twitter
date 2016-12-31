@@ -1,5 +1,6 @@
 import time
 t0=time.time()
+import parameters
 import json
 import pickle
 import matplotlib.pyplot as plt
@@ -7,6 +8,8 @@ from mpl_toolkits.basemap import Basemap
 t1=time.time()
 print('Time to load libraries: ' + str(t1-t0) + ' seconds')
 
+# Select bounding box
+boundingBox = parameters.boundingBox['claremont']
 
 # load map template
 t0=time.time()
@@ -29,8 +32,6 @@ themap = Basemap(projection='merc',
 t1=time.time()
 print('Time to create basemap ' + str(t1-t0) + ' seconds')
 
-
-
 # Tweets are stored in "fname"
 t0=time.time()
 lon=[]
@@ -38,23 +39,21 @@ lat=[]
 with open('twitter_data/la_stream.json', 'r') as f:
     for line in f:
         tweet = json.loads(line)
-        lon.append(tweet['geo']['coordinates'][1])
-        lat.append(tweet['geo']['coordinates'][0])
-        text = tweet['text']
-        print(text)
-        print("*******************************")
-        print("*******************************")
-
+        latitude = tweet['geo']['coordinates'][0]
+        longitude = tweet['geo']['coordinates'][1]
+        if longitude > boundingBox[0] and longitude < boundingBox[2] and latitude > boundingBox[1] and latitude < boundingBox[3]:
+            lat.append(latitude)
+            lon.append(longitude)
 t1=time.time()
-print('Time to get lon, lat: ' + str(t1-t0) + ' seconds')
+print('Time to get lon, lat: ' + str(t1-t0) + ' seconds (' + str(len(lon)) + ' total tweets)' )
 
-
+# plot
 t0=time.time()
 x, y = themap(lon, lat)
 themap.plot(x, y,
             'o',                    # marker shape
             color='red',         # marker colour
-            markersize=7            # marker size
+            markersize=3            # marker size
             )
 t1=time.time()
 print('Time to plot lon, lat: ' + str(t1-t0) + ' seconds')
