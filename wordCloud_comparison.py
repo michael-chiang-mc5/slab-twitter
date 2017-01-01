@@ -128,6 +128,20 @@ for cityName1 in cityNames:
 
 # display word cloud
 
+for cityName1 in cityNames:
+    for cityName2 in cityNames:
+        keywords = pairwise_chi2_matrix_filtered['compton']['pasadena'].keys()
+        for keyword in keywords:
+             word_comparison_info = pairwise_chi2_matrix_filtered['compton']['pasadena'][keyword]
+             word_comparison_info[color] = 'r'
+
+# put in red green colors
+keywords = [x for  x in word_comparison_info  ]
+for x in keywords:
+    print(x)
+
+sorted_word_comparison_info = sorted(word_comparison_info.items(),key=lambda x: x[1]['pvalue'])
+print( [word[0] for word in sorted_word_comparison_info] )
 
 
 
