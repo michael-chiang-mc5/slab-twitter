@@ -554,6 +554,67 @@ class WordCloud(object):
 
         return d3.items()
 
+    # removed plural check
+    def MCprocess_text(self, text):
+        """Splits a long text into words, eliminates the stopwords.
+
+        Parameters
+        ----------
+        text : string
+            The text to be processed.
+
+        Returns
+        -------
+        words : list of tuples (string, float)
+            Word tokens with associated frequency.
+
+        Notes
+        -----
+        There are better ways to do word tokenization, but I don't want to
+        include all those things.
+        """
+
+        d = {}
+        flags = (re.UNICODE if sys.version < '3' and type(text) is unicode
+                 else 0)
+        for word in re.findall(r"\w[\w']+", text, flags=flags):
+            if word.isdigit():
+                continue
+
+            word_lower = word.lower()
+            if word_lower in self.stopwords:
+                continue
+
+            # Look in lowercase dict.
+            try:
+                d2 = d[word_lower]
+            except KeyError:
+                d2 = {}
+                d[word_lower] = d2
+
+            # Look in any case dict.
+            d2[word] = d2.get(word, 0) + 1
+
+        # merge plurals into the singular count (simple cases only)
+        #for key in list(d.keys()):
+        #    if key.endswith('s'):
+        #        key_singular = key[:-1]
+        #        if key_singular in d:
+        #            dict_plural = d[key]
+        #            dict_singular = d[key_singular]
+        #            for word, count in dict_plural.items():
+        #                singular = word[:-1]
+        #                dict_singular[singular] = dict_singular.get(singular, 0) + count
+        #            del d[key]
+
+        d3 = {}
+        for d2 in d.values():
+            # Get the most popular case.
+            first = max(d2.items(), key=item1)[0]
+            d3[first] = sum(d2.values())
+
+        return d3.items()
+
     def generate_from_text(self, text):
         """Generate wordcloud from text.
 

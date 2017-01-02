@@ -1,5 +1,6 @@
 # http://sebastianraschka.com/Articles/2014_twitter_wordcloud.html
-from wordcloud import WordCloud, STOPWORDS
+#from wordcloud import WordCloud, STOPWORDS
+from MCWordCloud import WordCloud, STOPWORDS
 import json
 import time
 import parameters
@@ -7,20 +8,21 @@ import matplotlib.pyplot as plt
 import scipy.stats as stats
 import copy
 import pickle
+import re
+import sys
 
 # Only do pairwise comparisons on these cities
 #cityNames = [cityName for cityName in parameters.boundingBox.keys() if cityName != 'mapTemplate']
 cityNames = [cityName for cityName in parameters.boundingBox.keys()]
-cityNames = cityNames[0:2]
-
+#cityNames = cityNames[0:2]
+#cityNames = ['compton','mapTemplate']
 
 # extra stopwords
 stopwords_extra = ['']
 STOPWORDS = STOPWORDS.union(stopwords_extra)
 
-# TODO: filter careerArc, job, etc.
-
 # read all tweets into list
+# TODO: filter careerArc, job, etc.
 t0=time.time()
 tweets = []
 with open('twitter_data/la_stream.json', 'r') as f:
@@ -37,6 +39,13 @@ wC = WordCloud(
                       height=1400
                      )
 
+def removeTrailingS(word):
+    if word.endswith('s') or word.endswith('S'):
+        return word[:-1]
+    else:
+        return word
+
+
 # assemble word list for all cities
 words_byCity = dict()
 for cityName in cityNames:
@@ -47,17 +56,25 @@ for cityName in cityNames:
                                                     tweet['geo']['coordinates'][0] > boundingBox[1] and \
                                                     tweet['geo']['coordinates'][0] < boundingBox[3] \
                                                     ]
-    # list to string
+    # list of words
     words = " ".join([tweet['text'] for tweet in tweets_filtered])
+    words2 = words.split()
     # sanitize
-    words = " ".join([word.lower() for word in words.split()
+    words3 = " ".join([word.lower() for word in words2
                                 if 'http' not in word
                                     and not word.startswith('@')
                                     and word != 'RT'
                                     and word != '-&gt;' # greater than sign
+                                    and word.lower() not in STOPWORDS
                                 ])
+    # sanitize more
+    flags = (re.UNICODE if sys.version < '3' and type(text) is unicode
+             else 0)
+    words4=[word for word in re.findall(r"\w[\w']+", words3, flags=flags) if not word.isdigit() ]
+    # remove trailing s to account for plural
+    words5 = " ".join([removeTrailingS(word) for word in words4])
     # count word frequencies
-    word_frequencies = dict(wC.process_text(words)) # process_text will remove stopwords
+    word_frequencies = dict(wC.MCprocess_text(words5)) # process_text will remove stopwords
     # store
     words_byCity[cityName] = word_frequencies
 
@@ -113,7 +130,7 @@ for cityName1, words1 in words_byCity.items():
                 #oddsratio, pvalue = stats.fisher_exact(contingency_matrix)
                 chi2, pvalue, dof, ex = stats.chi2_contingency(contingency_matrix, correction=False)
 
-                word_comparison_info[word] = {'pvalue':pvalue*bonferonni_correction,'rate1':m11/(m11+m12),'rate2':m21/(m21+m22)}
+                word_comparison_info[word] = {'pvalue':pvalue*bonferonni_correction,'rate1':m11/(m11+m12),'rate2':m21/(m21+m22),'contingency_matrix':contingency_matrix}
             t1=time.time()
             pairwise_chi2_matrix[cityName1][cityName2] = word_comparison_info
     print('Time to do ' + cityName1 + ': ' + str(t1-t0) + ' seconds')
@@ -122,43 +139,3 @@ for cityName1, words1 in words_byCity.items():
 output = open('wordcloud_comparison.pkl', 'wb')
 pickle.dump(pairwise_chi2_matrix, output)
 output.close()
-
-# load
-t0=time.time()
-pkl_file = open('wordcloud_comparison.pkl', 'rb')
-pairwise_chi2_matrix = pickle.load(pkl_file)
-pkl_file.close()
-t1=time.time()
-print('Time to load wordcloud_comparison.pkl: ' + str(t1-t0) + ' seconds')
-cityNames = pairwise_chi2_matrix.keys()
-
-# filter for words by p-value
-p_threshold = 0.05*bonferonni_correction
-pairwise_chi2_matrix_filtered = copy.deepcopy(pairwise_chi2_matrix)
-for cityName1 in cityNames:
-    for cityName2 in cityNames:
-        try:
-            word_comparison_info1 = pairwise_chi2_matrix[cityName1][cityName2]
-            word_comparison_info2 = [x for x in word_comparison_info1.items() if x[1]['pvalue'] < p_threshold]
-            pairwise_chi2_matrix_filtered[cityName1][cityName2] = dict(word_comparison_info2)
-        except:
-            pass
-
-from MCWordCloud import WordCloud as MCWC
-wC = MCWC(
-                      font_path='/Users/mcah5a/Library/Fonts/CabinSketch-Bold.ttf',
-                      background_color='black',
-                      width=1800,
-                      height=1400,
-                      relative_scaling=1,
-                     )
-
-for cityName1 in cityNames:
-    for cityname2 in cityNames:
-        if cityName1 == cityname2:
-            continue
-        wC.MCgenerate_from_frequencies(pairwise_chi2_matrix_filtered[cityName1][cityname2].items())
-        plt.imshow(wC)
-        plt.axis('off')
-        plt.savefig('./img_wordcloud/' + cityName1 + '-' + cityname2 + '.png', dpi=300)
-        #plt.show()
