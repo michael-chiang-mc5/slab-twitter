@@ -1,4 +1,7 @@
+twitter_data/
+img_wordcloud/
 config.py
 __pycache__/
 venv/
+*.pkl
 
