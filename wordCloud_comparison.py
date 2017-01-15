@@ -45,7 +45,6 @@ def removeTrailingS(word):
     else:
         return word
 
-
 # assemble word list for all cities
 words_byCity = dict()
 for cityName in cityNames:

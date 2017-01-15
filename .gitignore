@@ -4,4 +4,4 @@ config.py
 __pycache__/
 venv/
 *.pkl
-
+*.pyc
